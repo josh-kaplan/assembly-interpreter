@@ -50,7 +50,8 @@ class x86(BaseArchitecture):
 
     @property
     def ax(self):
-        pass
+        '''Returns the value of the AX register.'''
+        return self._eax >> 16
 
 
     @ax.setter
@@ -60,7 +61,8 @@ class x86(BaseArchitecture):
 
     @property
     def ah(self):
-        pass
+        '''Returns the value of the AH register.'''
+        return (self._eax >> 8) & 0xFF
 
 
     @ah.setter
@@ -70,7 +72,8 @@ class x86(BaseArchitecture):
 
     @property
     def al(self):
-        pass
+        '''Returns the value of the AL register.'''
+        return self._eax & 0xFF
 
 
     @al.setter
@@ -94,7 +97,8 @@ class x86(BaseArchitecture):
 
     @property
     def bx(self):
-        pass
+        '''Returns the value of the BX register.'''
+        return self._ebx >> 16
 
 
     @bx.setter
@@ -104,7 +108,8 @@ class x86(BaseArchitecture):
 
     @property
     def bh(self):
-        pass
+        '''Returns the value of the BH register.'''
+        return (self._ebx >> 8) & 0xFF
 
 
     @bh.setter
@@ -114,7 +119,8 @@ class x86(BaseArchitecture):
 
     @property
     def bl(self):
-        pass
+        '''Returns the value of the BL register.'''
+        return self._ebx & 0xFF
 
 
     @bl.setter
@@ -138,7 +144,8 @@ class x86(BaseArchitecture):
 
     @property
     def cx(self):
-        pass
+        '''Returns the value of the CX register.'''
+        return self._ecx >> 16
 
 
     @cx.setter
@@ -148,7 +155,8 @@ class x86(BaseArchitecture):
 
     @property
     def ch(self):
-        pass
+        '''Returns the value of the CH register.'''
+        return (self._ecx >> 8) & 0xFF
 
 
     @ch.setter
@@ -158,7 +166,8 @@ class x86(BaseArchitecture):
 
     @property
     def cl(self):
-        pass
+        '''Returns the value of the CL register.'''
+        return self._ecx & 0xFF
 
 
     @cl.setter
@@ -182,7 +191,8 @@ class x86(BaseArchitecture):
 
     @property
     def dx(self):
-        pass
+        '''Returns the value of the DX register.'''
+        return self._edx >> 16
 
 
     @dx.setter
@@ -192,7 +202,8 @@ class x86(BaseArchitecture):
 
     @property
     def dh(self):
-        pass
+        '''Returns the value of the DH register.'''
+        return (self._edx >> 8) & 0xFF
 
 
     @dh.setter
@@ -202,7 +213,8 @@ class x86(BaseArchitecture):
 
     @property
     def dl(self):
-        pass
+        '''Returns the value of the DL register.'''
+        return self._edx & 0xFF
 
 
     @dl.setter
