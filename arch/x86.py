@@ -4,8 +4,13 @@
 File:           /arch/x86.py
 Author:         Josh Kaplan
 Email:          contact@joshkaplan.org
-Description:    A class defining the x86 architecture.
-Changelog:
+
+Description:    A software definition of the x86 architecture.
+
+TODO:
+    - Add support for memory and addressing
+    - Add ability for interpretor to handle labels (for branching)
+
 """
 import unittest
 from __init__ import BaseArchitecture
@@ -56,7 +61,10 @@ class x86(BaseArchitecture):
 
     @ax.setter
     def ax(self, value):
-        pass
+        '''Sets the value of the AX register.'''
+        if value > 0xFFFF:
+            raise x86SyntaxError('Register AX cannot accept a value greater than 16 bits')
+        self._eax = ((self._eax << 16) >> 16) | (value << 16)
 
 
     @property
@@ -67,7 +75,10 @@ class x86(BaseArchitecture):
 
     @ah.setter
     def ah(self, value):
-        pass
+        '''Sets the value of the AH register.'''
+        if value > 0xFF:
+            raise x86SyntaxError('Register AH cannot accept a value greater than 8 bits')
+        self._eax = (self._eax & 0xFFFF00FF) | (value << 8)
 
 
     @property
@@ -78,7 +89,10 @@ class x86(BaseArchitecture):
 
     @al.setter
     def al(self, value):
-        pass
+        '''Sets the value of the AL register.'''
+        if value > 0xFF:
+            raise x86SyntaxError('Register AL cannot accept a value greater than 8 bits')
+        self._eax = ((self._eax >> 8) << 8 )| value
 
 
     @property
@@ -103,7 +117,10 @@ class x86(BaseArchitecture):
 
     @bx.setter
     def bx(self, value):
-        pass
+        '''Sets the value of the BX register.'''
+        if value > 0xFFFF:
+            raise x86SyntaxError('Register BX cannot accept a value greater than 16 bits')
+        self._ebx = ((self._ebx << 16) >> 16) | (value << 16)
 
 
     @property
@@ -114,7 +131,10 @@ class x86(BaseArchitecture):
 
     @bh.setter
     def bh(self, value):
-        pass
+        '''Sets the value of the BH register.'''
+        if value > 0xFF:
+            raise x86SyntaxError('Register BH cannot accept a value greater than 8 bits')
+        self._ebx = (self._ebx & 0xFFFF00FF) | (value << 8)
 
 
     @property
@@ -125,7 +145,10 @@ class x86(BaseArchitecture):
 
     @bl.setter
     def bl(self, value):
-        pass
+        '''Sets the value of the BL register.'''
+        if value > 0xFF:
+            raise x86SyntaxError('Register BL cannot accept a value greater than 8 bits')
+        self._ebx = ((self._ebx >> 8) << 8 )| value
 
 
     @property
@@ -150,7 +173,10 @@ class x86(BaseArchitecture):
 
     @cx.setter
     def cx(self, value):
-        pass
+        '''Sets the value of the CX register.'''
+        if value > 0xFFFF:
+            raise x86SyntaxError('Register CX cannot accept a value greater than 16 bits')
+        self._ecx = ((self._ecx << 16) >> 16) | (value << 16)
 
 
     @property
@@ -161,7 +187,10 @@ class x86(BaseArchitecture):
 
     @ch.setter
     def ch(self, value):
-        pass
+        '''Sets the value of the CH register.'''
+        if value > 0xFF:
+            raise x86SyntaxError('Register CH cannot accept a value greater than 8 bits')
+        self._ecx = (self._ecx & 0xFFFF00FF) | (value << 8)
 
 
     @property
@@ -172,7 +201,10 @@ class x86(BaseArchitecture):
 
     @cl.setter
     def cl(self, value):
-        pass
+        '''Sets the value of the CL register.'''
+        if value > 0xFF:
+            raise x86SyntaxError('Register CL cannot accept a value greater than 8 bits')
+        self._ecx = ((self._ecx >> 8) << 8 )| value
 
 
     @property
@@ -197,7 +229,10 @@ class x86(BaseArchitecture):
 
     @dx.setter
     def dx(self, value):
-        pass
+        '''Sets the value of the DX register.'''
+        if value > 0xFFFF:
+            raise x86SyntaxError('Register DX cannot accept a value greater than 16 bits')
+        self._edx = ((self._edx << 16) >> 16) | (value << 16)
 
 
     @property
@@ -208,7 +243,10 @@ class x86(BaseArchitecture):
 
     @dh.setter
     def dh(self, value):
-        pass
+        '''Sets the value of the DH register.'''
+        if value > 0xFF:
+            raise x86SyntaxError('Register DH cannot accept a value greater than 8 bits')
+        self._edx = (self._edx & 0xFFFF00FF) | (value << 8)
 
 
     @property
@@ -219,7 +257,10 @@ class x86(BaseArchitecture):
 
     @dl.setter
     def dl(self, value):
-        pass
+        '''Sets the value of the DL register.'''
+        if value > 0xFF:
+            raise x86SyntaxError('Register DL cannot accept a value greater than 8 bits')
+        self._edx = ((self._edx >> 8) << 8 )| value
 
 
     @property
@@ -328,6 +369,37 @@ class x86InstructionSet(object):
         setattr(self.proc, arg1, arg2)
 
 
+    def int(self, args):
+        '''Handles/implements system calls based on current register 
+        contents. For now, the following calls are supported:
+
+            - sys_exit
+            - sys_fork      => Not implemented
+            - sys_read      => Not implemented
+            - sys_write     => Doesn't support files other than 1
+        '''
+        arg = helpers.resolve_constant(args)
+        if arg != 0x80:
+            raise x86SyntaxError('Unknown argument for int: % s' % (arg))
+
+        # sys_exit
+        if self.eax == 1:
+            # call exit
+            pass
+        # sys_fork
+        elif self.eax == 2:
+            raise x86SyntaxError('Sorry, sys_fork not supported.')
+        # sys_read
+        elif self.eax == 3:
+            raise x86SyntaxError('Sorry, sys_read not supported.')
+        # sys_write
+        elif self.eax == 4:
+            # unsigned int fd, const char * buf, size_t count
+            if self.ebx != 1:
+                x86SyntaxError('Sorry, sys_write only supports stdout.')
+            buf = self.ecx
+
+
 
 ###############################################################################
 # Interpreter
@@ -339,23 +411,37 @@ class x86Interpreter():
     def __init__(self):
         # Processor
         self.InstructionSet = x86InstructionSet()
+        # Stack - see note below
+        self.stack = list()
         
         # Interpreter
         while 1:
             try:
                 # take input from user, ignoring comments, 
                 # grab operation/command name
-                cmd = raw_input('-> ')
+                cmd = raw_input('0x{:08X}    '.format(len(self.stack)*4))
                 cmd = cmd.split(';')[0]
-                cmd = cmd.split(' ')
+                cmd = cmd.strip().split(' ')
 
                 # check that processor has command
                 # call operation with args or raise SyntaxError
                 if hasattr(self.InstructionSet, cmd[0]):
+                    # NOTE: Not really sure how I want to handle the stack, 
+                    # but I'm gonna do it like this for now so I can at least
+                    # use the addresses as the interpreter prompt.
+                    # This will almost definitely change. This also might give
+                    # me just enough to start figuring out how I want to 
+                    # handle labels.
+                    self.stack.append(' '.join(cmd))
+                    
+                    # call the command
                     getattr(self.InstructionSet, cmd[0])(cmd[1:])
+
                 # providing a shortcut notation for printing register values
                 elif hasattr(self.InstructionSet.proc, cmd[0]):
                     print getattr(self.InstructionSet.proc, cmd[0])
+
+                # if not a valid (ISA or custom) command, raise SyntaxError
                 else:
                     raise x86SyntaxError('Invalid command.')
 
