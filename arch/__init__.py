@@ -1,7 +1,7 @@
 #!/usr/bin/env
 """
 
-File:           /arch/BaseArchitecture.py
+File:           /arch/__init__py
 Author:         Josh Kaplan
 Email:          contact@joshkaplan.org
 Description:    A class defining a base architecture.
