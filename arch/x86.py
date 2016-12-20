@@ -318,6 +318,27 @@ class x86(BaseArchitecture):
             console.warning('Overflow occured with register EBP.')
         self._ebp = value % 2**32
 
+    # Allow registers to be case insensitive.
+    EAX = eax
+    EBX = ebx
+    ECX = ecx 
+    EDX = edx 
+    AX  = ax
+    BX  = bx
+    CX  = cx 
+    DX  = dx 
+    AH  = ah 
+    BH  = bh 
+    CH  = ch 
+    DH  = dh
+    AL  = al
+    BL  = bl 
+    CL  = cl 
+    DL  = dl 
+    ESP = esp 
+    EBP = ebp
+
+
 
 ###############################################################################
 # Instruction Set Architecture
@@ -367,6 +388,73 @@ class x86InstructionSet(object):
 
         # move arg2 into arg1
         setattr(self.proc, arg1, arg2)
+
+
+    def add(self, args):
+        '''Takes two arguments: a valid register and a second argument 
+        containing either a valid register or a constant. Adds the second 
+        argument to the first and stores the result in the first argument 
+        register.'''
+        if len(args) != 2: 
+            raise x86SyntaxError('Invalid operands after add command')
+        args = ''.join(args).split(',')
+        arg1 = args[0].strip()
+        arg2 = args[1].strip()
+
+        # validate arg1 is a valid register
+        if not hasattr(self.proc, arg1):
+            raise x86SyntaxError('Invalid operand: %s' % (arg1))
+
+        # check if arg2 is a register or a constant
+        if hasattr(self.proc, arg2):
+            arg2 = getattr(self.proc, arg2)
+        # check if it's a valid constant
+        elif helpers.is_constant(arg2):
+            arg2 = helpers.resolve_constant(arg2)
+        else:
+            raise x86SyntaxError('Invalid operand: %s' % (arg2))
+
+        # final error check
+        if arg2 is None:
+            raise x86SyntaxError('Invalid operand: %s' % (arg2))
+
+        # add arg1 to arg2 and place result into arg1
+        result = getattr(self.proc, arg1) + arg2
+        setattr(self.proc, arg1, result)
+
+
+    def sub(self, args):
+        '''Takes two arguments: a valid register and a second argument 
+        containing either a valid register or a constant. Substracts the 
+        second argument from the first and stores the result in the first 
+        argument register.'''
+        if len(args) != 2: 
+            raise x86SyntaxError('Invalid operands after add command')
+        args = ''.join(args).split(',')
+        arg1 = args[0].strip()
+        arg2 = args[1].strip()
+
+        # validate arg1 is a valid register
+        if not hasattr(self.proc, arg1):
+            raise x86SyntaxError('Invalid operand: %s' % (arg1))
+
+        # check if arg2 is a register or a constant
+        if hasattr(self.proc, arg2):
+            arg2 = getattr(self.proc, arg2)
+        # check if it's a valid constant
+        elif helpers.is_constant(arg2):
+            arg2 = helpers.resolve_constant(arg2)
+        else:
+            raise x86SyntaxError('Invalid operand: %s' % (arg2))
+
+        # final error check
+        if arg2 is None:
+            raise x86SyntaxError('Invalid operand: %s' % (arg2))
+
+        # add arg1 to arg2 and place result into arg1
+        result = getattr(self.proc, arg1) - arg2
+        setattr(self.proc, arg1, result)
+
 
 
     def int(self, args):

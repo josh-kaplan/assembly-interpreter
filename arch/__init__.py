@@ -64,12 +64,11 @@ class helpers(object):
 
         # attempt to convert to int, if exceptions return false
         try:
-            int(val, base)
+            return int(val, base) >= 0
         except ValueError:
             return False
         except:
             return False
-        return True
  
 
     @staticmethod
